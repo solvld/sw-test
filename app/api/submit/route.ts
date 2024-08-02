@@ -1,6 +1,7 @@
 import { google } from 'googleapis'
 import { NextResponse } from 'next/server'
 import { SheetForm } from '@/app/lib/types'
+import { sendMessage } from '@/app/lib/telegram'
 
 export async function POST(request: Request) {
   // if (req.method !== 'POST') {
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
       },
     })
 
+    await sendMessage(body.message)
     return NextResponse.json(
       {
         data: response.data,
