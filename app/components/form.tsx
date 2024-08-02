@@ -2,6 +2,7 @@
 import { useMutation } from '@tanstack/react-query'
 import React, { FormEvent, useState } from 'react'
 import { SheetForm } from '../lib/types'
+import { toast } from 'sonner'
 
 export default function Form() {
   const [name, setName] = useState<string>('')
@@ -19,6 +20,18 @@ export default function Form() {
         },
         body: JSON.stringify(formData),
       })
+      if (!response.ok) {
+        const data = await response.json()
+        const errorMessage = data?.message || 'An error occurred'
+        throw new Error(errorMessage)
+      }
+    },
+    onSuccess() {
+      toast('Order Success')
+    },
+    onError(error) {
+      console.error(error)
+      toast(error.message)
     },
   })
 
