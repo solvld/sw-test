@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-   "googleapis": "^91.0.0",
+    "@tanstack/react-query": "^5.51.18",
+    "googleapis": "^91.0.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"

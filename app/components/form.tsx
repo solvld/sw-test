@@ -1,11 +1,26 @@
 'use client'
+import { useMutation } from '@tanstack/react-query'
 import React, { FormEvent, useState } from 'react'
+import { SheetForm } from '../lib/types'
 
 export default function Form() {
-  const [name, setName] = useState<string>()
-  const [email, setEmail] = useState<string>()
-  const [phone, setPhone] = useState<string>()
-  const [message, setMessage] = useState<string>()
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [phone, setPhone] = useState<string>('')
+  const [message, setMessage] = useState<string>('')
+
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: async (formData: SheetForm) => {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+    },
+  })
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,18 +32,7 @@ export default function Form() {
       message,
     }
 
-    const response = await fetch('/api/submit', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(form),
-    })
-
-    const content = await response.json()
-
-    alert(JSON.stringify(content.data.tableRange))
+    mutate(form)
 
     setName('')
     setPhone('')
@@ -88,7 +92,8 @@ export default function Form() {
         <div className="flex items-center justify-center">
           <button
             type="submit"
-            className="w-64 p-3 shadow rounded-lg bg-indigo-900 text-white"
+            disabled={isPending}
+            className="w-64 p-3 shadow rounded-lg bg-indigo-900 text-white disabled:opacity-20 transition-all duration-300"
           >
             submit
           </button>

@@ -1,13 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { google } from 'googleapis'
 import { NextResponse } from 'next/server'
-
-interface SheetForm {
-  name: string
-  email: string
-  phone: string
-  message: string
-}
+import { SheetForm } from '@/app/lib/types'
 
 export async function POST(request: Request) {
   // if (req.method !== 'POST') {
@@ -43,11 +36,17 @@ export async function POST(request: Request) {
       },
     })
 
-    return NextResponse.json({
-      data: response.data,
-    })
+    return NextResponse.json(
+      {
+        data: response.data,
+      },
+      { status: 200 },
+    )
   } catch (error) {
-    console.log(error)
-    return NextResponse.json({ message: 'fail' })
+    console.error(error)
+    return NextResponse.json(
+      { message: 'Something went wrong' },
+      { status: 500 },
+    )
   }
 }
