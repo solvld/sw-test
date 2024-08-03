@@ -1,7 +1,7 @@
 import { google } from 'googleapis'
 import { NextResponse } from 'next/server'
-import { SheetForm } from '@/app/lib/types'
-import { formatMessage, sendMessage } from '@/app/lib/telegram'
+import { SheetForm } from '@/lib/types'
+import { formatMessage, sendMessage } from '@/lib/telegram'
 
 export async function POST(request: Request) {
   // if (req.method !== 'POST') {

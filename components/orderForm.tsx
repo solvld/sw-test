@@ -1,8 +1,10 @@
 'use client'
 import { useMutation } from '@tanstack/react-query'
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { SheetForm } from '../lib/types'
 import { toast } from 'sonner'
+import { Button } from './ui/button'
+import { Loader2 } from 'lucide-react'
 
 export default function Form() {
   const [name, setName] = useState<string>('')
@@ -46,16 +48,20 @@ export default function Form() {
     }
 
     mutate(form)
-
-    setName('')
-    setPhone('')
-    setEmail('')
-    setMessage('')
   }
 
+  useEffect(() => {
+    if (isSuccess) {
+      setName('')
+      setPhone('')
+      setEmail('')
+      setMessage('')
+    }
+  }, [isSuccess])
+
   return (
-    <div className=" mt-8 mx-auto p-16 bg-gray-200 rounded-xl">
-      <form className="space-y-4" onSubmit={handleSubmit}>
+    <div className="px-8 py-6 mt-8 mx-auto bg-gray-200 rounded-xl">
+      <form className="space-y-4 min-w-72" onSubmit={handleSubmit}>
         <div className="flex flex-col justify-center">
           <label htmlFor="name" className="">
             Name
@@ -103,13 +109,10 @@ export default function Form() {
         </div>
 
         <div className="flex items-center justify-center">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-64 p-3 shadow rounded-lg bg-indigo-900 text-white disabled:opacity-20 transition-all duration-300"
-          >
-            submit
-          </button>
+          <Button type="submit" disabled={isPending}>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending ? 'Please wait' : 'Submit'}
+          </Button>
         </div>
       </form>
     </div>
