@@ -34,7 +34,7 @@ import { useMutation } from '@tanstack/react-query'
 import { SheetForm } from '@/lib/types'
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, generateTimeArray, timeNow } from '@/lib/utils'
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -46,7 +46,8 @@ const FormSchema = z.object({
   dob: z.date({
     required_error: 'A date of birth is required.',
   }),
-  time: z.string().min(1),
+  hour: z.string().min(1),
+  min: z.string().min(1),
 })
 
 export function InputForm() {
@@ -151,6 +152,7 @@ export function InputForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="dob"
@@ -201,6 +203,66 @@ export function InputForm() {
               </FormItem>
             )}
           />
+          <div className="flex space-x-2">
+            <FormField
+              control={form.control}
+              name="hour"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-fit min-w-[5rem]">
+                        <SelectValue placeholder="Hour" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {generateTimeArray(timeNow(9), 23).map((hour, i) => {
+                        return (
+                          <SelectItem key={i} value={hour}>
+                            {hour}
+                          </SelectItem>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="min"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-fit min-w-[5rem]">
+                        <SelectValue placeholder="Min" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {generateTimeArray(0, 45, 15).map((minute, i) => {
+                        return (
+                          <SelectItem key={i} value={minute}>
+                            {minute}
+                          </SelectItem>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <Button type="submit" disabled={isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isPending ? 'Please wait' : 'Submit'}
