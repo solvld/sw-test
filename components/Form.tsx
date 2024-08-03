@@ -3,12 +3,26 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,6 +34,7 @@ import { useMutation } from '@tanstack/react-query'
 import { SheetForm } from '@/lib/types'
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -28,6 +43,10 @@ const FormSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(2),
   message: z.string(),
+  dob: z.date({
+    required_error: 'A date of birth is required.',
+  }),
+  time: z.string().min(1),
 })
 
 export function InputForm() {
@@ -128,6 +147,56 @@ export function InputForm() {
                 <FormControl>
                   <Input placeholder="Message" type="text" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-[240px] pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, 'PP')
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={date => {
+                        const now = new Date()
+                        const hours = now.getHours()
+                        const today = new Date(
+                          now.getFullYear(),
+                          now.getMonth(),
+                          now.getDate(),
+                        )
+
+                        // Если сейчас меньше 18:00, то включаем сегодняшнюю дату в диапазон
+                        return hours < 18 ? date < today : date <= today
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
